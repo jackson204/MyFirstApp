@@ -2,6 +2,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 
-app.Map("/", () => "Hello, World!");
-
+app.Run(async context =>
+{
+    context.Response.StatusCode = 400;
+    await context.Response.WriteAsync("Hello World!");
+});
 app.Run();
