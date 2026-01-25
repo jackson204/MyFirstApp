@@ -1,15 +1,18 @@
+using Microsoft.AspNetCore.WebUtilities;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 
 app.Run(async context =>
 {
-    var requestPath = context.Request.Path;
-    var requestMethod = context.Request.Method;
-    context.Response.StatusCode = 400;
-    context.Response.Headers.Append("mykey", "value");
-    context.Response.Headers.Append("Content-Type", "text/html; charset=utf-8");
-    await context.Response.WriteAsync($"<h1>Hello World! {requestPath}</h1> ");
-    await context.Response.WriteAsync($"<h1>Hello World! {requestMethod}</h1> ");
+   var streamReader = new StreamReader(context.Request.Body);
+   var bodyText = await streamReader.ReadToEndAsync();
+   var dictionary = QueryHelpers.ParseQuery(bodyText);
+  if (dictionary.TryGetValue("age", out var value))
+  {
+      await context.Response.WriteAsJsonAsync(value[0]);
+  }
 });
 app.Run();
+
